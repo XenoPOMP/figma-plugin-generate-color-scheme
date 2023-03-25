@@ -1,0 +1,11 @@
+{
+  "name": "Generate color scheme",
+  "id": "1221435682575784316",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": [
+    "figma"
+  ]
+}

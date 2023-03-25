@@ -1,0 +1,17 @@
+{
+  "name": "generate-color-scheme",
+  "version": "1.0.0",
+  "description": "Your Figma Plugin",
+  "main": "code.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "yarn build -- --watch"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "@figma/plugin-typings": "*",
+    "prettier": "^2.8.7",
+    "typescript": "*"
+  }
+}

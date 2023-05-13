@@ -38,7 +38,7 @@ members?.map((member, index) => {
           if (/Color code/gi.test(grandChild.name) && 'children' in grandChild) {
             grandChild.children.map(colorCodeChildren => {
               // ---- Colors => Color group => Color code => HEX RGB Code
-              if (/(#\w{0,6})|(rgba(.+))/gi.test(colorCodeChildren.name)) {
+              if (/(#\w{0,6})|(rgba(.+)|(linear-gradient\(.+\)))/gi.test(colorCodeChildren.name)) {
                 variables.hex.push(`${colorCodeChildren.name};\n`);
               }
             })

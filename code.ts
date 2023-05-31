@@ -40,8 +40,6 @@ const styleVars: ScssVariable[] = styles.map(style => {
 
 	const variablePaint = paints[0] as Paint;
 
-	console.log(variablePaint);
-
 	return {
 		name: name
 			.replace(/^.*\//i, '') // replace group name

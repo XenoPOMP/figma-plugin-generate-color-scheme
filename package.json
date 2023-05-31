@@ -1,6 +1,6 @@
 {
   "name": "generate-color-scheme",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Your Figma Plugin",
   "main": "code.js",
   "scripts": {
@@ -9,8 +9,11 @@
   },
   "author": "",
   "license": "",
+  "dependencies": {},
   "devDependencies": {
     "@figma/plugin-typings": "*",
+    "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/node": "^20.2.5",
     "prettier": "^2.8.7",
     "typescript": "*"
   }

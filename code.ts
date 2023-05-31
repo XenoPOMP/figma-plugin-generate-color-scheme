@@ -1,89 +1,143 @@
-const pageNode = figma.root.children[0];
+/**
+ * SCSS variable boilerplate.
+ */
+type ScssVariable = {
+	name: string;
+	groupName: string;
+	paint: {
+		r: Readonly<number>;
+		g: Readonly<number>;
+		b: Readonly<number>;
+		a: Readonly<number>;
+	};
+};
 
-const scheme: FrameNode = pageNode.children.map(child => child.name === 'Color schema' ? child : undefined)[0] as FrameNode;
-const members = scheme?.children;
+/**
+ * Math round function.
+ *
+ * @param {number} num				rounding number.
+ * @param {number} [offset]		defines how many digits after coma will be saved.
+ *
+ * @return {number}						rounded number.
+ */
+const roundNumber = (num: number, offset?: number): number => {
+	const offsetMultiplier =
+		offset === null || offset === undefined ? 1 : Math.pow(10, offset);
 
-let output: string = '&.theme {\n';
+	return parseInt(`${num * offsetMultiplier}`) / offsetMultiplier;
+};
 
-members?.map((member, index) => {
-  // Check if frame is color group
-  if (/colors/gi.test(member.name) && 'children' in member) {
-    // Add top gap
-    if (index !== 0) {
-      output = output.concat('\n');
-    }
+/**
+ * All local styles from document.
+ */
+const styles: PaintStyle[] = figma.getLocalPaintStyles();
 
-    // Get styles
-    member?.children.map(child => {
-      // Colors
-      if (/Color group/gi.test(child.name) && 'children' in child) {
-        // Colors => Color group
-        const colorGroup: ReadonlyArray<SceneNode> = child.children;
+/**
+ * Collection of SCSS variables from document.
+ */
+const styleVars: ScssVariable[] = styles.map(style => {
+	const { name, paints } = style;
 
-        const variables: {
-          titles: string[],
-          hex: string[]
-        } = {
-          titles: [],
-          hex: []
-        };
+	const variablePaint = paints[0] as Paint;
 
-        child?.children.map((grandChild, index) => {
-          // ---- Colors => Color group => Variable name
-          if (/^--/gi.test(grandChild.name)) {
-            variables.titles.push(`  ${grandChild.name}: `);
-          }
+	console.log(variablePaint);
 
-          // ---- Colors => Color group => Color code
-          if (/Color code/gi.test(grandChild.name) && 'children' in grandChild) {
-            grandChild.children.map(colorCodeChildren => {
-              // ---- Colors => Color group => Color code => HEX RGB Code
-              if (/(#\w{0,6})|(rgba(.+)|(linear-gradient\(.+\)))/gi.test(colorCodeChildren.name)) {
-                variables.hex.push(`${colorCodeChildren.name};\n`);
-              }
-            })
-          }
-        })
+	return {
+		name: name
+			.replace(/^.*\//i, '') // replace group name
+			.replace(/[\s]/gi, '-') // replace forbidden chars (space)
+			.replace(/^(?!(--))/i, '--') // add '--' to start
+			.toLowerCase(),
+		groupName: /^.*\//i.test(name)
+			? name.replace(/\/.*$/i, '')
+			: 'Other styles',
+		paint: {
+			r:
+				'color' in variablePaint
+					? roundNumber(255 * variablePaint.color.r)
+					: -1,
+			g:
+				'color' in variablePaint
+					? roundNumber(255 * variablePaint.color.g)
+					: -1,
+			b:
+				'color' in variablePaint
+					? roundNumber(255 * variablePaint.color.b)
+					: -1,
+			a: variablePaint.opacity ? roundNumber(variablePaint.opacity, 2) : -1,
+		},
+	};
+});
 
-        // Add lines to code
-        variables.titles.forEach((title, index) => {
-          output = variables.titles[index] && variables.hex[index] ? output.concat(variables.titles[index], variables.hex[index]) : output;
-        })
-      }
-    });
-  }
-})
+/**
+ * Grouped SCSS variables.
+ */
+let groups: Record<string, string[]> = {};
 
-output = output.concat('}');
+// Loop over all collected data
+styleVars.forEach(variable => {
+	const { name, groupName, paint } = variable;
 
-// Output is filled here
+	// Create clear array if it does not exist
+	if (groups[groupName] === undefined) {
+		groups[groupName] = [];
+	}
+
+	// Add new style to group array
+	groups[groupName].push(
+		paint.a === -1
+			? `${name}: rgb(${paint.r}, ${paint.g}, ${paint.b})`
+			: `${name}: rgba(${paint.r}, ${paint.g}, ${paint.b}, ${paint.a})`
+	);
+});
+
+/**
+ * Plugin`s work result.
+ */
+let outputText = '&.theme {\n';
+
+for (let groupName in groups) {
+	outputText = outputText.concat(`\n\t// ${groupName}\n`);
+
+	groups[groupName].forEach(variable => {
+		outputText = outputText.concat(`\t${variable}\n`);
+	});
+}
+
+// Add ending bracket to output
+outputText = outputText.concat(`}`);
+
+// Create text object with variables
 (async () => {
-  const text = figma.createText();
+	const text = figma.createText();
 
-  text.name = 'Generated SCSS code'
-  text.x = -4647;
-  text.y = -1472;
+	text.name = 'Generated SCSS code';
+	text.x = -4800;
+	text.y = -1472;
 
-  text.resizeWithoutConstraints(2549, 3203);
+	text.resizeWithoutConstraints(2549, 3203);
 
-  figma.loadFontAsync(text.fontName as FontName)
-      .then(() => {
-        text.characters = output;
+	figma
+		.loadFontAsync(text.fontName as FontName)
+		.then(() => {
+			text.characters = outputText;
 
-        text.fontSize = 50;
-        text.textAutoResize = 'HEIGHT';
-        text.fills = [{
-          type: 'SOLID',
-          color: {
-            r: 1,
-            g: 1,
-            b: 1,
-          },
-          opacity: 1
-        }]
-      })
-      .then(() => {
-        // console.log(output);
-        figma.closePlugin();
-      });
+			text.fontSize = 50;
+			text.textAutoResize = 'HEIGHT';
+			text.fills = [
+				{
+					type: 'SOLID',
+					color: {
+						r: 1,
+						g: 1,
+						b: 1,
+					},
+					opacity: 1,
+				},
+			];
+		})
+		.finally(() => {
+			// Close plugin
+			figma.closePlugin();
+		});
 })();

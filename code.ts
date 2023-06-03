@@ -98,7 +98,7 @@ for (let groupName in groups) {
 	outputText = outputText.concat(`\n\t// ${groupName}\n`);
 
 	groups[groupName].forEach(variable => {
-		outputText = outputText.concat(`\t${variable}\n`);
+		outputText = outputText.concat(`\t${variable};\n`);
 	});
 }
 

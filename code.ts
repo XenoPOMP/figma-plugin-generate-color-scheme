@@ -96,7 +96,7 @@ styleVars.forEach(variable => {
 				: `${name}: rgba(${paint.r}, ${paint.g}, ${paint.b}, ${paint.a})`
 		);
 	} else {
-		`${name}: ${groups[groupName].push(paint)}`;
+		groups[groupName].push(`${name}: ${paint}`);
 	}
 });
 

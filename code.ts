@@ -4,12 +4,14 @@
 type ScssVariable = {
 	name: string;
 	groupName: string;
-	paint: {
-		r: Readonly<number>;
-		g: Readonly<number>;
-		b: Readonly<number>;
-		a: Readonly<number>;
-	};
+	paint:
+		| {
+				r: Readonly<number>;
+				g: Readonly<number>;
+				b: Readonly<number>;
+				a: Readonly<number>;
+		  }
+		| string;
 };
 
 /**
@@ -36,9 +38,9 @@ const styles: PaintStyle[] = figma.getLocalPaintStyles();
  * Collection of SCSS variables from document.
  */
 const styleVars: ScssVariable[] = styles.map(style => {
-	const { name, paints } = style;
+	const { name, paints, description } = style;
 
-	const variablePaint = paints[0] as Paint;
+	const variablePaint = paints[0];
 
 	return {
 		name: name
@@ -49,21 +51,26 @@ const styleVars: ScssVariable[] = styles.map(style => {
 		groupName: /^.*\//i.test(name)
 			? name.replace(/\/.*$/i, '')
 			: 'Other styles',
-		paint: {
-			r:
-				'color' in variablePaint
-					? roundNumber(255 * variablePaint.color.r)
-					: -1,
-			g:
-				'color' in variablePaint
-					? roundNumber(255 * variablePaint.color.g)
-					: -1,
-			b:
-				'color' in variablePaint
-					? roundNumber(255 * variablePaint.color.b)
-					: -1,
-			a: variablePaint.opacity ? roundNumber(variablePaint.opacity, 2) : -1,
-		},
+		paint:
+			variablePaint.type === 'GRADIENT_LINEAR'
+				? description
+				: {
+						r:
+							'color' in variablePaint
+								? roundNumber(255 * variablePaint.color.r)
+								: -1,
+						g:
+							'color' in variablePaint
+								? roundNumber(255 * variablePaint.color.g)
+								: -1,
+						b:
+							'color' in variablePaint
+								? roundNumber(255 * variablePaint.color.b)
+								: -1,
+						a: variablePaint.opacity
+							? roundNumber(variablePaint.opacity, 2)
+							: -1,
+				  },
 	};
 });
 
@@ -82,11 +89,15 @@ styleVars.forEach(variable => {
 	}
 
 	// Add new style to group array
-	groups[groupName].push(
-		paint.a === -1
-			? `${name}: rgb(${paint.r}, ${paint.g}, ${paint.b})`
-			: `${name}: rgba(${paint.r}, ${paint.g}, ${paint.b}, ${paint.a})`
-	);
+	if (typeof paint !== 'string') {
+		groups[groupName].push(
+			paint.a === -1
+				? `${name}: rgb(${paint.r}, ${paint.g}, ${paint.b})`
+				: `${name}: rgba(${paint.r}, ${paint.g}, ${paint.b}, ${paint.a})`
+		);
+	} else {
+		groups[groupName].push(paint);
+	}
 });
 
 /**

@@ -1,4 +1,4 @@
-import { ArrayType, FunctionPrimitive } from '@xenopomp/advanced-types';
+import { FunctionPrimitive } from '@xenopomp/advanced-types';
 
 /**
  * This is plugin`s cycle function.
@@ -7,7 +7,7 @@ import { ArrayType, FunctionPrimitive } from '@xenopomp/advanced-types';
  * 											plugin`s init and it`s closing.
  */
 const doPluginCycle = (callback: FunctionPrimitive<void>) => {
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		callback();
 
 		figma.closePlugin();
@@ -20,12 +20,33 @@ let ignore = doPluginCycle(() => {
 		title: string;
 		color: string;
 	}> = figma.getLocalPaintStyles().map(style => {
-		const { paints } = style;
+		const { paints, name } = style;
 
-		const getColor = (): string => {
-			const targetPaint: ArrayType<typeof paints> = paints.at(0);
-		};
+		const targetPaint = paints[0];
 
-		return { title: '', color: paints.at(0) ?? 'transparent' };
+		let resultColor: string = '';
+
+		if (targetPaint.type === 'SOLID') {
+			const { r, g, b } = targetPaint.color;
+			const { opacity } = targetPaint;
+
+			resultColor = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
+		}
+
+		return { title: name, color: resultColor };
 	});
+
+	let outputTwConfig = 'colors: {\n';
+
+	const concatOutput = (...strings: string[]) => {
+		outputTwConfig = outputTwConfig.concat(...strings);
+	};
+
+	paintStyles.forEach(style => {
+		const { title, color } = style;
+
+		concatOutput(`\t'${title}': \'${color}\',\n`);
+	});
+
+	concatOutput('},');
 });

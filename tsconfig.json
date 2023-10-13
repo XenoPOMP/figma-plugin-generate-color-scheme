@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "lib": ["es6"],
+    "target": "es2022",
+    "lib": ["es2022"],
+    "moduleResolution": "NodeNext",
     "strict": true,
     "typeRoots": [
       "./node_modules/@types",
@@ -13,4 +14,7 @@
       "@/*": ["src/*"]
     }
   },
+  "exclude": [
+    "./src/scripts"
+  ]
 }

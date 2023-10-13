@@ -1,21 +1,8 @@
 import { FunctionPrimitive } from '@xenopomp/advanced-types';
 
-/**
- * This is plugin`s cycle function.
- *
- * @param callback			this callback is being executed between
- * 											plugin`s init and it`s closing.
- */
-const doPluginCycle = (callback: FunctionPrimitive<void>) => {
-	return new Promise((resolve, reject) => {
-		callback();
-
-		figma.closePlugin();
-	});
-};
-
 // Invoke plugin
-let ignore = doPluginCycle(() => {
+(async () => {
+	// Generate output text
 	const paintStyles: Array<{
 		title: string;
 		color: string;
@@ -49,4 +36,37 @@ let ignore = doPluginCycle(() => {
 	});
 
 	concatOutput('},');
-});
+
+	// Generate text component
+	const text = figma.createText();
+
+	text.name = 'Generated TW config code';
+	text.x = -4800;
+	text.y = -1472;
+
+	text.resizeWithoutConstraints(2549, 3203);
+
+	figma
+		.loadFontAsync(text.fontName as FontName)
+		.then(() => {
+			text.characters = outputTwConfig;
+
+			text.fontSize = 50;
+			text.textAutoResize = 'HEIGHT';
+			text.fills = [
+				{
+					type: 'SOLID',
+					color: {
+						r: 1,
+						g: 1,
+						b: 1,
+					},
+					opacity: 1,
+				},
+			];
+		})
+		.finally(() => {
+			figma.notify('Generate TW config for you.');
+			figma.closePlugin();
+		});
+})();

@@ -20,7 +20,15 @@ import { FunctionPrimitive } from '@xenopomp/advanced-types';
 			resultColor = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
 		}
 
-		return { title: name, color: resultColor };
+		const processName = (name: string): string => {
+			return name
+				.replace(/^.*\//g, '')
+				.replace(/\s/g, '-')
+				.replace(/^\-{1,2}/g, '')
+				.toLowerCase();
+		};
+
+		return { title: processName(name), color: resultColor };
 	});
 
 	let outputTwConfig = 'colors: {\n';

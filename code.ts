@@ -17,7 +17,11 @@ import { FunctionPrimitive } from '@xenopomp/advanced-types';
 			const { r, g, b } = targetPaint.color;
 			const { opacity } = targetPaint;
 
-			resultColor = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
+			if (opacity === 1) {
+				resultColor = `rgb(${r * 255} ${g * 255} ${b * 255})`;
+			} else {
+				resultColor = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
+			}
 		}
 
 		const processName = (name: string): string => {

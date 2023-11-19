@@ -13,15 +13,27 @@ import { FunctionPrimitive } from '@xenopomp/advanced-types';
 
 		let resultColor: string = '';
 
-		if (targetPaint.type === 'SOLID') {
-			const { r, g, b } = targetPaint.color;
-			const { opacity } = targetPaint;
+		const constructStringColor = (
+			rgb: SolidPaint['color'],
+			opacity: SolidPaint['opacity']
+		) => {
+			const { r, g, b } = rgb;
+
+			let result = '';
 
 			if (opacity === 1) {
-				resultColor = `rgb(${r * 255} ${g * 255} ${b * 255})`;
+				result = `rgb(${r * 255} ${g * 255} ${b * 255})`;
 			} else {
-				resultColor = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
+				result = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
 			}
+
+			return result;
+		};
+
+		if (targetPaint.type === 'SOLID') {
+			const { opacity } = targetPaint;
+
+			resultColor = constructStringColor(targetPaint.color, opacity);
 		}
 
 		const processName = (name: string): string => {

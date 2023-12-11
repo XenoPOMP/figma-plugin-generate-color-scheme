@@ -28,11 +28,23 @@ import { FunctionPrimitive } from '@xenopomp/advanced-types';
 					return parsedNum.length === 1 ? `0${parsedNum}` : parsedNum;
 				};
 
+				const formatRgb = ({
+					r,
+					g,
+					b,
+				}: Record<'r' | 'g' | 'b', string>): string => {
+					return `#${r}${g}${b}`;
+				};
+
 				const redHex = dec2hex(r * 255);
 				const greenHex = dec2hex(g * 255);
 				const blueHex = dec2hex(b * 255);
 
-				result = `#${redHex}${greenHex}${blueHex}`;
+				result = formatRgb({
+					r: redHex,
+					g: greenHex,
+					b: blueHex,
+				});
 			} else {
 				result = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
 			}

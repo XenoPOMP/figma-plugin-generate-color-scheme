@@ -22,7 +22,15 @@ import { FunctionPrimitive } from '@xenopomp/advanced-types';
 			let result = '';
 
 			if (opacity === 1) {
-				result = `rgb(${r * 255} ${g * 255} ${b * 255})`;
+				const dec2hex = (num: number) => {
+					return parseInt(`${num}`).toString(16).toUpperCase();
+				};
+
+				const redHex = dec2hex(r * 255);
+				const greenHex = dec2hex(g * 255);
+				const blueHex = dec2hex(b * 255);
+
+				result = `#${redHex}${greenHex}${blueHex}`;
 			} else {
 				result = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
 			}

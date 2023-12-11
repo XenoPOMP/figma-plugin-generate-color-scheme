@@ -23,7 +23,9 @@ import { FunctionPrimitive } from '@xenopomp/advanced-types';
 
 			if (opacity === 1) {
 				const dec2hex = (num: number) => {
-					return parseInt(`${num}`).toString(16).toUpperCase();
+					const parsedNum = parseInt(`${num}`).toString(16).toUpperCase();
+
+					return parsedNum.length === 1 ? `0${parsedNum}` : parsedNum;
 				};
 
 				const redHex = dec2hex(r * 255);

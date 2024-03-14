@@ -4,7 +4,7 @@
   "description": "Your Figma Plugin",
   "main": "dist/code.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json && yarn clear:build",
+    "build": "shx rm -rf dist && tsc -p tsconfig.json && yarn clear:build",
     "clear:build": "ts-node src/scripts/cleanBuild.ts",
     "watch": "nodemon --exec \"yarn build\" --ext \"ts\""
   },
@@ -21,6 +21,8 @@
     "@xenopomp/advanced-types": "^1.7.4",
     "nodemon": "^3.0.1",
     "prettier": "^2.8.7",
+    "shx": "^0.3.4",
+    "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.4.x"
   }

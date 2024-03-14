@@ -18,10 +18,10 @@
     "@figma/plugin-typings": "*",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/node": "^20.2.5",
-    "@xenopomp/advanced-types": "^1.2.2",
+    "@xenopomp/advanced-types": "^1.7.4",
     "nodemon": "^3.0.1",
     "prettier": "^2.8.7",
     "ts-node": "^10.9.1",
-    "typescript": "*"
+    "typescript": "^5.4.x"
   }
 }

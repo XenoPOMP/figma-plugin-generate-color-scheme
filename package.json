@@ -2,9 +2,9 @@
   "name": "generate-color-scheme",
   "version": "3.0.0",
   "description": "Your Figma Plugin",
-  "main": "dist/code.js",
+  "main": "dist/code.mjs",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -p tsconfig.json && yarn clear:build",
+    "build": "unbuild && yarn clear:build",
     "clear:build": "ts-node src/scripts/cleanBuild.ts",
     "watch": "nodemon --exec \"yarn build\" --ext \"ts\""
   },
@@ -24,6 +24,7 @@
     "shx": "^0.3.4",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.4.x"
+    "typescript": "^5.4.x",
+    "unbuild": "^2.0.0"
   }
 }

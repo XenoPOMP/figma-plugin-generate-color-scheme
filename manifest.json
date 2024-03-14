@@ -2,7 +2,7 @@
   "name": "Generate color scheme",
   "id": "1221435682575784316",
   "api": "1.0.0",
-  "main": "dist/code.js",
+  "main": "dist/code.mjs",
   "capabilities": [],
   "enableProposedApi": false,
   "editorType": [

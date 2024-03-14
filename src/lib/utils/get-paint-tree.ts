@@ -1,6 +1,6 @@
 import { RecursiveKeyValuePair } from 'tailwindcss/types/config';
 
-import { isSolidPaint, rgbToHex } from '@/lib/utils';
+import { isSolidPaint, rgbToHex } from '../utils';
 
 type Tree = RecursiveKeyValuePair<string, string>;
 
@@ -10,10 +10,10 @@ type Tree = RecursiveKeyValuePair<string, string>;
  */
 export const getPaintTree = () => {
 	const paintStyles = figma.getLocalPaintStyles();
-	const tree = {};
+	let tree: Tree = {};
 
 	/** Loop over each paint style. */
-	paintStyles.forEach(({ paints, name }) => {
+	paintStyles.flatMap(({ paints, name }) => {
 		const targetPaint = paints[0];
 
 		let result = '';
@@ -29,8 +29,10 @@ export const getPaintTree = () => {
 		/** Convert rgb to hex. */
 		result = rgbToHex(color, opacity);
 
+		/** Get folders and style name. */
 		const parts = name.split(/\//gi);
-
-		console.log(parts);
+		// const styleName = parts.pop();
 	});
+
+	return tree;
 };

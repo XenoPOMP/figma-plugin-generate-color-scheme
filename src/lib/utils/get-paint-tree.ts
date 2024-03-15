@@ -32,5 +32,7 @@ export const getPaintTree = () => {
 		tree = set(tree, parts, result);
 	});
 
-	return tree;
+	return {
+		colors: tree,
+	};
 };

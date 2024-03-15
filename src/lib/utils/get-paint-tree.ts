@@ -26,7 +26,10 @@ export const getPaintTree = () => {
 		result = rgbToHex(color, opacity);
 
 		/** Get folders and style name. */
-		const parts = name.split(/\//gi);
+		const parts = name.split(/\//gi).map(part => {
+			/** Normalize parts here. */
+			return part.toLowerCase().trim().replace(/\s/gi, '-');
+		});
 
 		/** Form tree with function. */
 		tree = mergeDeep(tree, set({}, parts, result));

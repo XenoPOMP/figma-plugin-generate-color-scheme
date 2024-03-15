@@ -1,4 +1,4 @@
-import { getPaintTree } from './src/lib/utils';
+import { createText, getPaintTree } from './src/lib/utils';
 
 // Invoke plugin
 (async () => {
@@ -7,5 +7,30 @@ import { getPaintTree } from './src/lib/utils';
 		.replace(/((^\s{2})|(^{)|(^}$))/gm, '')
 		.trim();
 
-	figma.closePlugin();
+	/** Create figma text node. */
+	const outputText = createText('Generated TW config code');
+
+	figma
+		.loadFontAsync(outputText.fontName as FontName)
+		.then(() => {
+			outputText.characters = textToDisplay;
+
+			outputText.fontSize = 50;
+			outputText.textAutoResize = 'HEIGHT';
+			outputText.fills = [
+				{
+					type: 'SOLID',
+					color: {
+						r: 1,
+						g: 1,
+						b: 1,
+					},
+					opacity: 1,
+				},
+			];
+		})
+		.finally(() => {
+			figma.notify('Generated TW config for you.');
+			figma.closePlugin();
+		});
 })();

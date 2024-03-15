@@ -1,4 +1,4 @@
-import { isSolidPaint, rgbToHex, set } from '../utils';
+import { isSolidPaint, mergeDeep, rgbToHex, set } from '../utils';
 
 /**
  * Creates paint tree from figma styles
@@ -6,7 +6,7 @@ import { isSolidPaint, rgbToHex, set } from '../utils';
  */
 export const getPaintTree = () => {
 	const paintStyles = figma.getLocalPaintStyles();
-	let tree = {};
+	let tree: object = {};
 
 	/** Loop over each paint style. */
 	paintStyles.flatMap(({ paints, name }) => {
@@ -29,7 +29,7 @@ export const getPaintTree = () => {
 		const parts = name.split(/\//gi);
 
 		/** Form tree with function. */
-		tree = set(tree, parts, result);
+		tree = mergeDeep(tree, set({}, parts, result));
 	});
 
 	return {

@@ -1,105 +1,23 @@
-import { FunctionPrimitive } from '@xenopomp/advanced-types';
+import { createText, getPaintTree } from './src/lib/utils';
 
 // Invoke plugin
 (async () => {
-	// Generate output text
-	const paintStyles: Array<{
-		title: string;
-		color: string;
-	}> = figma.getLocalPaintStyles().map(style => {
-		const { paints, name } = style;
+	/** Tree formatted to text with indentations. */
+	const textToDisplay = JSON.stringify(getPaintTree(), null, 2)
+		.replace(/((^\s{2})|(^{)|(^}$))/gm, '')
+		.trim();
 
-		const targetPaint = paints[0];
-
-		let resultColor: string = '';
-
-		const constructStringColor = (
-			rgb: SolidPaint['color'],
-			opacity: SolidPaint['opacity']
-		) => {
-			const { r, g, b } = rgb;
-
-			let result = '';
-
-			if (opacity === 1) {
-				const dec2hex = (num: number) => {
-					const parsedNum = parseInt(`${num}`).toString(16).toUpperCase();
-
-					return parsedNum.length === 1 ? `0${parsedNum}` : parsedNum;
-				};
-
-				const formatRgb = ({
-					r,
-					g,
-					b,
-				}: Record<'r' | 'g' | 'b', string>): string => {
-					return `#${r}${g}${b}`;
-				};
-
-				const redHex = dec2hex(r * 255);
-				const greenHex = dec2hex(g * 255);
-				const blueHex = dec2hex(b * 255);
-
-				result = formatRgb({
-					r: redHex,
-					g: greenHex,
-					b: blueHex,
-				});
-			} else {
-				result = `rgba(${r * 255} ${g * 255} ${b * 255} / ${opacity})`;
-			}
-
-			return result;
-		};
-
-		if (targetPaint.type === 'SOLID') {
-			const { opacity } = targetPaint;
-
-			resultColor = constructStringColor(targetPaint.color, opacity);
-		}
-
-		const processName = (name: string): string => {
-			return name
-				.replace(/^.*\//g, '')
-				.replace(/\s/g, '-')
-				.replace(/^\-{1,2}/g, '')
-				.toLowerCase();
-		};
-
-		return { title: processName(name), color: resultColor };
-	});
-
-	let outputTwConfig = 'colors: {\n';
-
-	const concatOutput = (...strings: string[]) => {
-		outputTwConfig = outputTwConfig.concat(...strings);
-	};
-
-	paintStyles.forEach(style => {
-		const { title, color } = style;
-
-		concatOutput(`\t'${title}': \'${color}\',\n`);
-	});
-
-	concatOutput('},');
-
-	// Generate text component
-	const text = figma.createText();
-
-	text.name = 'Generated TW config code';
-	text.x = -4800;
-	text.y = -1472;
-
-	text.resizeWithoutConstraints(2549, 3203);
+	/** Create figma text node. */
+	const outputText = createText('Generated TW config code');
 
 	figma
-		.loadFontAsync(text.fontName as FontName)
+		.loadFontAsync(outputText.fontName as FontName)
 		.then(() => {
-			text.characters = outputTwConfig;
+			outputText.characters = textToDisplay;
 
-			text.fontSize = 50;
-			text.textAutoResize = 'HEIGHT';
-			text.fills = [
+			outputText.fontSize = 50;
+			outputText.textAutoResize = 'HEIGHT';
+			outputText.fills = [
 				{
 					type: 'SOLID',
 					color: {
@@ -112,7 +30,7 @@ import { FunctionPrimitive } from '@xenopomp/advanced-types';
 			];
 		})
 		.finally(() => {
-			figma.notify('Generate TW config for you.');
+			figma.notify('Generated TW config for you.');
 			figma.closePlugin();
 		});
 })();

@@ -25,7 +25,7 @@ export const createText = async (
 	/** Created Figma`s text node. */
 	const text = figma.createText();
 
-	/** Change metadata of text. */
+	/** Change name and position of text. */
 	text.name = name;
 	text.x = options.x;
 	text.y = options.y;
